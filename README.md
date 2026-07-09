@@ -1,23 +1,27 @@
-# DevOps CRUD App (Express.js & TypeScript Boilerplate)
+# DevOps CRUD App (Express.js & TypeScript Boilerplate with Prisma ORM)
 
-A modular, robust, and production-ready Express.js application template written in **TypeScript**. This repository provides a clean folder structure and fundamental setup, ready for adding controllers, services, and routes.
+A modular, robust, and production-ready Express.js application template written in **TypeScript** using **Prisma ORM** for database interaction. This repository provides a clean folder structure and database setup, ready for adding controllers, services, repositories, and routes.
 
 ## Features
 
 - **TypeScript Implementation**: Strict compile-time checks, type-safety, and modern ES imports.
-- **Modular Architecture**: Clean, pre-configured folder structure containing placeholders for routes, controllers, services, repositories, and config.
+- **Database ORM Integration**: Prisma ORM setup configured for database access, with a pre-configured singleton client.
+- **Modular Architecture**: Clean, pre-configured folder structure separating routes, controllers, services, repositories, and configurations.
 - **Security Middlewares**: Configured with `helmet` for secure HTTP headers and `cors` for cross-origin requests.
 - **Error Handling**: Centralized global error handling middleware returning clean JSON responses.
 - **Logging**: Morgan HTTP request logging in development mode.
-- **Graceful Shutdown**: Automatically shuts down and closes server connections on termination signals (`SIGINT`, `SIGTERM`).
+- **Graceful Shutdown**: Automatically shuts down and closes server connections / Prisma connections on termination signals (`SIGINT`, `SIGTERM`).
 
 ---
 
 ## Directory Structure
 
 ```
+├── prisma/
+│   └── schema.prisma        # Prisma schema file defining datasource, generator, and models
 ├── src/
-│   ├── config/              # Config files (e.g., database clients, third-party API configurations)
+│   ├── config/
+│   │   └── db.ts            # Prisma client instance singleton configuration
 │   ├── repositories/        # Database CRUD operations layer
 │   ├── services/            # Core business logic layer
 │   ├── controllers/         # Handles HTTP requests and responses
@@ -44,12 +48,23 @@ A modular, robust, and production-ready Express.js application template written 
    ```
 
 2. **Configure Environment**:
-   - Copy `.env.example` to create `.env` (it contains default configuration like `PORT`):
+   - Copy `.env.example` to create `.env`:
      ```bash
      cp .env.example .env
      ```
+   - Update `DATABASE_URL` in `.env` with your actual database credentials.
 
-3. **Run the Application**:
+3. **Prisma Setup**:
+   - Run the Prisma migration tool to set up database schemas:
+     ```bash
+     npx prisma migrate dev
+     ```
+   - Generate the Prisma Client locally:
+     ```bash
+     npx prisma generate
+     ```
+
+4. **Run the Application**:
    - Run in development mode (with hot-reload using `ts-node-dev`):
      ```bash
      npm run dev
@@ -70,13 +85,15 @@ A modular, robust, and production-ready Express.js application template written 
 ### Health Check
 
 - **Endpoint**: `GET /health`
-- **Description**: Returns the current status, timestamp, and process uptime.
+- **Description**: Returns the current status, timestamp, process uptime, and database connectivity.
 - **Response**:
   ```json
   {
     "status": "UP",
     "timestamp": "2026-07-09T06:19:31.964Z",
-    "uptime": "12s"
+    "uptime": "12s",
+    "database": "UP"
   }
   ```
+
 

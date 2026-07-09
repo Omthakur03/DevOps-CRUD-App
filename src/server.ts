@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import app from './app';
+import prisma from './config/db';
 
 const PORT = process.env.PORT || 3000;
 
@@ -16,9 +17,17 @@ const server = app.listen(PORT, () => {
 const gracefulShutdown = async (signal: string) => {
   console.log(`\nReceived ${signal}. Shutting down gracefully...`);
   
-  server.close(() => {
+  server.close(async () => {
     console.log('HTTP server closed.');
-    process.exit(0);
+    
+    try {
+      await prisma.$disconnect();
+      console.log('Prisma Client disconnected.');
+      process.exit(0);
+    } catch (err) {
+      console.error('Error during database disconnection:', err);
+      process.exit(1);
+    }
   });
 
   setTimeout(() => {
