@@ -78,6 +78,22 @@ A modular, robust, and production-ready Express.js application template written 
      npm start
      ```
 
+### Running with Docker
+
+You can run the application containerized using Docker and Docker Compose. It is configured to run in **host network mode**, allowing the container to connect directly to the database running on your host machine (using the `DATABASE_URL` settings in your `.env` file).
+
+1. Ensure Docker and Docker Compose are installed.
+2. Ensure your local PostgreSQL database is running on the host machine.
+3. Configure your local `.env` file.
+4. Build the image and start the container:
+   ```bash
+   docker compose up --build -d
+   ```
+5. To stop the container:
+   ```bash
+   docker compose down
+   ```
+
 ---
 
 ## API Documentation

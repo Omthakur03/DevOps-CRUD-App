@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    container_name: devops-crud-web
+    restart: always
+    env_file:
+      - .env
+    extra_hosts:
+      - "localhost:host-gateway"
+    ports:
+      - "${PORT:-4000}:${PORT:-4000}"
