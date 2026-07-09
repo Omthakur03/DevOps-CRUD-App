@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import prisma from './config/db';
+import productRoutes from './routes/productRoutes';
 import errorHandler from './middleware/errorHandler';
 
 const app = express();
@@ -34,6 +35,8 @@ app.get('/health', async (_req: Request, res: Response) => {
     database: dbStatus
   });
 });
+
+app.use('/api/products', productRoutes);
 
 app.use((req: Request, _res: Response, next: NextFunction) => {
   const error = new Error(`Route Not Found - ${req.originalUrl}`) as any;

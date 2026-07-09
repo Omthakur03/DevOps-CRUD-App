@@ -24,3 +24,5 @@ yarn-error.log*
 # OS Files
 .DS_Store
 Thumbs.db
+
+DevOps-CRUD-App.postman_collection.json

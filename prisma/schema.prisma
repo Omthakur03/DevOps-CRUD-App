@@ -10,4 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  sku         String   @unique
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
 

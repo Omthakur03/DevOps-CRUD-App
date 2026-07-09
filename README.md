@@ -96,4 +96,27 @@ A modular, robust, and production-ready Express.js application template written 
   }
   ```
 
+### Products API
+
+| Method | Endpoint | Description | Request Body |
+| :--- | :--- | :--- | :--- |
+| **GET** | `/api/products` | Retrieve all products | None |
+| **GET** | `/api/products/:id` | Get product details by ID | None |
+| **POST** | `/api/products` | Create a new product | JSON body with fields (see below) |
+| **PUT** | `/api/products/:id` | Update product details | JSON body with fields (see below) |
+| **DELETE** | `/api/products/:id` | Delete a product | None |
+
+#### Create Product Request Body:
+```json
+{
+  "name": "Super Coffee Maker",
+  "description": "High quality espresso machine",
+  "price": 149.99,
+  "sku": "COFFEE-M-01",
+  "stock": 50
+}
+```
+*Note: `name`, `price`, and `sku` (must be unique) are required.*
+
+
 
