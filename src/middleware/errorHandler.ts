@@ -4,11 +4,15 @@ interface AppError extends Error {
   statusCode?: number;
 }
 
-const errorHandler = (err: AppError, _req: Request, res: Response, _next: NextFunction): void => {
-  console.error(`[Error Handler] ${err.message || err}`, err.stack);
-
+const errorHandler = (err: AppError, req: Request, res: Response, _next: NextFunction): void => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
+
+  if (statusCode === 404) {
+    console.warn(`[Error Handler] 404 Not Found - ${req.method} ${req.originalUrl}`);
+  } else {
+    console.error(`[Error Handler] ${statusCode} - ${err.message || err}`, err.stack);
+  }
 
   res.status(statusCode).json({
     status: 'error',

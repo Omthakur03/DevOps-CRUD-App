@@ -35,6 +35,19 @@ app.get('/health', async (_req: Request, res: Response) => {
     database: dbStatus
   });
 });
+app.get('/', (_req: Request, res: Response) => {
+  res.json({
+    message: 'Welcome to the DevOps Product API',
+    endpoints: {
+      health: '/health',
+      products: '/api/products'
+    }
+  });
+});
+
+app.get('/favicon.ico', (_req: Request, res: Response) => {
+  res.status(204).end();
+});
 
 app.use('/api/products', productRoutes);
 
