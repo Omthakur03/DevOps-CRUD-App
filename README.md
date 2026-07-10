@@ -63,6 +63,8 @@ The service manages a **Product** table (`products`) inside PostgreSQL with the 
 
 ## 🔌 API Reference & Documentation
 
+**Production Base URL**: `https://app.mzsk.fun`
+
 ### Overview of Endpoints
 
 | Method | Endpoint | Description | Expected Payload | Response Status |
@@ -76,7 +78,7 @@ The service manages a **Product** table (`products`) inside PostgreSQL with the 
 | **DELETE** | `/api/products/:id` | Remove a product | None | `200 OK` / `404 Not Found` |
 
 ### Sample Payload (Create Product)
-`POST /api/products`
+`POST https://app.mzsk.fun/api/products`
 ```json
 {
   "name": "Mechanical Keyboard",
@@ -88,7 +90,7 @@ The service manages a **Product** table (`products`) inside PostgreSQL with the 
 ```
 
 ### Sample Response (Root Route)
-`GET /`
+`GET https://app.mzsk.fun/`
 ```json
 {
   "message": "Welcome to the DevOps Product API",
@@ -100,7 +102,7 @@ The service manages a **Product** table (`products`) inside PostgreSQL with the 
 ```
 
 ### Sample Response (Health Check)
-`GET /health`
+`GET https://app.mzsk.fun/health`
 ```json
 {
   "status": "UP",
@@ -124,6 +126,12 @@ Ensure you have the following installed locally:
 Copy `.env.example` to `.env` in the root directory:
 ```bash
 cp .env.example .env
+```
+Modify `.env` to include your configuration parameters (using random placeholders to keep production systems secure):
+```env
+PORT=4000
+DATABASE_URL="postgresql://db_user_random99:db_pass_random99@localhost:5432/product_db_dev?schema=public"
+NODE_ENV=development
 ```
 
 ### 3. Install Dependencies & Generate Prisma Client
