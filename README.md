@@ -1,138 +1,189 @@
-# DevOps CRUD App (Express.js & TypeScript Boilerplate with Prisma ORM)
+# 🚀 DevOps CRUD API Service
 
-A modular, robust, and production-ready Express.js application template written in **TypeScript** using **Prisma ORM** for database interaction. This repository provides a clean folder structure and database setup, ready for adding controllers, services, repositories, and routes.
-
-## Features
-
-- **TypeScript Implementation**: Strict compile-time checks, type-safety, and modern ES imports.
-- **Database ORM Integration**: Prisma ORM setup configured for database access, with a pre-configured singleton client.
-- **Modular Architecture**: Clean, pre-configured folder structure separating routes, controllers, services, repositories, and configurations.
-- **Security Middlewares**: Configured with `helmet` for secure HTTP headers and `cors` for cross-origin requests.
-- **Error Handling**: Centralized global error handling middleware returning clean JSON responses.
-- **Logging**: Morgan HTTP request logging in development mode.
-- **Graceful Shutdown**: Automatically shuts down and closes server connections / Prisma connections on termination signals (`SIGINT`, `SIGTERM`).
+A production-ready, modular, and type-safe REST API built with **Express.js** and **TypeScript**, using **Prisma ORM** for database mapping. It is fully containerized, optimized for local development, and integrated with an automated **Jenkins CI/CD** pipeline for continuous deployment.
 
 ---
 
-## Directory Structure
+## 🏗️ Architecture & Folder Structure
+
+The application follows a clean, decoupled, layered architectural pattern, separating routing, business logic, data persistence, and database configuration.
 
 ```
 ├── prisma/
-│   └── schema.prisma        # Prisma schema file defining datasource, generator, and models
+│   └── schema.prisma        # Prisma schema defining database models & configurations
 ├── src/
 │   ├── config/
-│   │   └── db.ts            # Prisma client instance singleton configuration
-│   ├── repositories/        # Database CRUD operations layer
-│   ├── services/            # Core business logic layer
-│   ├── controllers/         # Handles HTTP requests and responses
+│   │   └── db.ts            # Prisma Client singleton initialization
+│   ├── repositories/        # Database Access Layer (Direct DB operations via Prisma)
+│   ├── services/            # Business Logic Layer (Orchestrates repositories and logic)
+│   ├── controllers/         # Presentation Layer (HTTP requests/responses parser)
 │   ├── middleware/
-│   │   └── errorHandler.ts  # Global centralized error handler
-│   ├── routes/              # Route declarations mapping to controllers
-│   ├── app.ts               # Express application initialization and middleware setup
-│   └── server.ts            # Express server listener and process management
-├── .env                     # Local configuration and environment variables
-├── .env.example             # Shared template for environment variables
-├── .gitignore               # Ignored files list (including node_modules/ and dist/)
-├── tsconfig.json            # TypeScript compiler configuration
-├── package.json             # NPM package manifest
-└── README.md                # Documentation (this file)
+│   │   └── errorHandler.ts  # Centralized global error & exception handler
+│   ├── routes/              # Route definitions linking endpoints to controllers
+│   ├── app.ts               # Express App initialization and middleware registration
+│   └── server.ts            # Server entry point, listener, and process handlers
+├── .env.example             # Template for local environment configuration
+├── Dockerfile               # Optimized multi-stage Docker build pipeline
+├── docker-compose.yml       # Docker Compose setup for local container runs
+├── Jenkinsfile              # Declarative CI/CD pipeline script
+└── tsconfig.json            # TypeScript compiler configuration
 ```
 
 ---
 
-## Installation & Setup
+## ✨ Features
 
-1. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
-
-2. **Configure Environment**:
-   - Copy `.env.example` to create `.env`:
-     ```bash
-     cp .env.example .env
-     ```
-   - Update `DATABASE_URL` in `.env` with your actual database credentials.
-
-3. **Prisma Setup**:
-   - Run the Prisma migration tool to set up database schemas:
-     ```bash
-     npx prisma migrate dev
-     ```
-   - Generate the Prisma Client locally:
-     ```bash
-     npx prisma generate
-     ```
-
-4. **Run the Application**:
-   - Run in development mode (with hot-reload using `ts-node-dev`):
-     ```bash
-     npm run dev
-     ```
-   - Build for production (compiles TS into JavaScript inside the `dist/` directory):
-     ```bash
-     npm run build
-     ```
-   - Start in production mode (runs the compiled JavaScript):
-     ```bash
-     npm start
-     ```
-
-### Running with Docker
-
-You can run the application containerized using Docker and Docker Compose. It is configured to run in **host network mode**, allowing the container to connect directly to the database running on your host machine (using the `DATABASE_URL` settings in your `.env` file).
-
-1. Ensure Docker and Docker Compose are installed.
-2. Ensure your local PostgreSQL database is running on the host machine.
-3. Configure your local `.env` file.
-4. Build the image and start the container:
-   ```bash
-   docker compose up --build -d
-   ```
-5. To stop the container:
-   ```bash
-   docker compose down
-   ```
+- **TypeScript Type-Safety**: Ensures compile-time code safety, type checking, and modern ES imports.
+- **Prisma ORM & PostgreSQL**: Pre-configured database interface with a singleton Prisma client and structured migrations.
+- **Security Middlewares**: Configured with `helmet` for secure HTTP headers and `cors` for cross-origin request handling.
+- **Intelligent Error Handling**: 
+  - Standardizes error responses into clean, predictable JSON formats.
+  - Optimized logging: **404 Client Errors** are logged as simple console warnings without massive stack traces (preventing log pollution from bot scans and search crawlers). Full stack traces are preserved for **500 Server Errors** to ease debugging.
+- **Graceful Shutdown**: Intercepts termination signals (`SIGINT`, `SIGTERM`) to release database connections and close active HTTP listeners safely before exiting.
+- **Automated CI/CD**: Ready-to-go Jenkins configuration for automatic image building, registry publication, and server deployment.
 
 ---
 
-## API Documentation
+## 📊 Database Schema
 
-### Health Check
+The service manages a **Product** table (`products`) inside PostgreSQL with the following schema:
 
-- **Endpoint**: `GET /health`
-- **Description**: Returns the current status, timestamp, process uptime, and database connectivity.
-- **Response**:
-  ```json
-  {
-    "status": "UP",
-    "timestamp": "2026-07-09T06:19:31.964Z",
-    "uptime": "12s",
-    "database": "UP"
-  }
-  ```
-
-### Products API
-
-| Method | Endpoint | Description | Request Body |
+| Field Name | Type | Key | Description |
 | :--- | :--- | :--- | :--- |
-| **GET** | `/api/products` | Retrieve all products | None |
-| **GET** | `/api/products/:id` | Get product details by ID | None |
-| **POST** | `/api/products` | Create a new product | JSON body with fields (see below) |
-| **PUT** | `/api/products/:id` | Update product details | JSON body with fields (see below) |
-| **DELETE** | `/api/products/:id` | Delete a product | None |
+| `id` | `String (UUID)` | Primary Key | Autogenerated unique identifier |
+| `name` | `String` | - | Name of the product |
+| `description` | `String (Optional)` | - | Long-form description of the product |
+| `price` | `Float` | - | Unit price of the product |
+| `sku` | `String` | Unique | Unique Stock Keeping Unit identifier |
+| `stock` | `Int` | Default: `0` | Available stock count |
+| `createdAt` | `DateTime` | Default: `now()` | Timestamp when the record was created |
+| `updatedAt` | `DateTime` | Auto-update | Timestamp when the record was last modified |
 
-#### Create Product Request Body:
+---
+
+## 🔌 API Reference & Documentation
+
+### Overview of Endpoints
+
+| Method | Endpoint | Description | Expected Payload | Response Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/` | API Metadata & welcome summary | None | `200 OK` |
+| **GET** | `/health` | Application & Database connectivity check | None | `200 OK` / `503 Service Unavailable` |
+| **GET** | `/api/products` | Retrieve all products | None | `200 OK` |
+| **GET** | `/api/products/:id` | Retrieve detailed product by ID | None | `200 OK` / `404 Not Found` |
+| **POST** | `/api/products` | Create a new product | JSON object (details below) | `201 Created` / `400 Bad Request` |
+| **PUT** | `/api/products/:id` | Update product details | JSON object | `200 OK` / `404 Not Found` |
+| **DELETE** | `/api/products/:id` | Remove a product | None | `200 OK` / `404 Not Found` |
+
+### Sample Payload (Create Product)
+`POST /api/products`
 ```json
 {
-  "name": "Super Coffee Maker",
-  "description": "High quality espresso machine",
-  "price": 149.99,
-  "sku": "COFFEE-M-01",
-  "stock": 50
+  "name": "Mechanical Keyboard",
+  "description": "Tactile blue switches, RGB backlit",
+  "price": 89.99,
+  "sku": "KB-MECH-RGB-01",
+  "stock": 120
 }
 ```
-*Note: `name`, `price`, and `sku` (must be unique) are required.*
 
+### Sample Response (Root Route)
+`GET /`
+```json
+{
+  "message": "Welcome to the DevOps Product API",
+  "endpoints": {
+    "health": "/health",
+    "products": "/api/products"
+  }
+}
+```
 
+### Sample Response (Health Check)
+`GET /health`
+```json
+{
+  "status": "UP",
+  "timestamp": "2026-07-10T12:00:00.000Z",
+  "uptime": "345s",
+  "database": "UP"
+}
+```
 
+---
+
+## 🛠️ Local Installation & Development
+
+### 1. Prerequisites
+Ensure you have the following installed locally:
+- [Node.js](https://nodejs.org/) (v20 or higher recommended)
+- [PostgreSQL](https://www.postgresql.org/) database
+- [Docker](https://www.docker.com/) (Optional, for container runs)
+
+### 2. Set Up Environment Variables
+Copy `.env.example` to `.env` in the root directory:
+```bash
+cp .env.example .env
+```
+
+### 3. Install Dependencies & Generate Prisma Client
+Install external modules and generate TypeScript types from the database schema:
+```bash
+npm install
+npx prisma generate
+```
+
+### 4. Apply Database Migrations
+Create databases/tables and align the schema:
+```bash
+npx prisma migrate dev
+```
+
+### 5. Running the Application
+* **Development Mode** (with hot-reload):
+  ```bash
+  npm run dev
+  ```
+* **Build TypeScript Code**:
+  ```bash
+  npm run build
+  ```
+* **Production Mode** (runs the compiled JavaScript in `dist/`):
+  ```bash
+  npm start
+  ```
+
+---
+
+## 🐳 Containerization with Docker
+
+The service includes a multi-stage Docker build, separating compilation from runtime execution to minimize final image size and enforce security.
+
+### Multi-Stage Build Details:
+1. **Builder Stage**: Loads full dependencies, generates Prisma client types, and runs `tsc` compiler.
+2. **Runner Stage**: Installs only production-related dependencies and copies transpiled code, keeping the container slim and fast.
+
+### Running with Docker Compose
+To run both the application and environment configuration locally under Docker:
+```bash
+docker compose up --build -d
+```
+The server will bind to the configured port (default: `4000`) and be ready to accept requests.
+
+---
+
+## 🔄 CI/CD Jenkins Pipeline
+
+The codebase is equipped with a **declarative Jenkins Pipeline** configuration (`Jenkinsfile`) for complete automation of builds and deployments.
+
+### Pipeline Stages:
+1. **Pull Repository**: Automatically pulls code updates from the source control repository.
+2. **Build Docker Image**: Builds the Docker container, tagging it both with the Jenkins Build Number and `:latest`.
+3. **Push to Docker Hub**: Logs into Docker Hub using credentials and uploads both image tags.
+4. **Deploy Container**: Deploys the service container dynamically to the target EC2 host:
+   - Removes any existing `crud-service` container safely.
+   - Spins up the new image on port `4000` with container restart policies configured.
+   - Automatically loads host-specific environments from `/opt/env/.env.crud-service`.
+
+### Automated Cleanup
+A `post { cleanup }` stage runs automatically after execution to remove local build images from the CI runner host, preventing storage exhaustion.
