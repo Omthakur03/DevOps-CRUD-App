@@ -25,6 +25,7 @@ The system is designed as a containerized Node.js (Express + TypeScript) REST AP
                                            │  PostgreSQL  │ (RDS Instance)
                                            └──────────────┘
 ```
+![AWS Architecture](image.png)
 
 - **Runtime**: Node.js 20 on Alpine Linux (for a minimal vulnerability footprint and performance).
 - **CI/CD Platform**: Jenkins executing a declarative pipeline.
